@@ -169,7 +169,7 @@ for item in rss_items:
         logging.warning(f"Не получилось найти имя: {title}")
         continue
 
-    db_exists = False
+    exists_db = False
     # Проверяем наличие в базе истории закачек
     for db_row in cur.execute(f"""
         SELECT 1 FROM history WHERE 1=1
@@ -178,26 +178,31 @@ for item in rss_items:
             AND quality = '{quality}'
     """):
         #var_dump(db_row[0])
-        if (db_row[0] == 1):
-            db_exists = True
+        if ( db_row[0] == 1 ):
+            exists_db = True
+
+    exists_config = real_name in config['subscriptions'] and quality == config['subscriptions'][real_name]
+    exists_blacklist = real_name in config['blacklist']
+    exists_downloading = real_name in catalog and series in catalog[real_name]
+
+#    logging.debug(
+#        f'Проверка наличий real_name={real_name}, series={series}, quality={quality}, exists_db={exists_db} exists_blacklist={exists_blacklist}, exists_downloading={exists_downloading}')
 
     # Качаем только нужные серии
     if (
-        real_name in config['subscriptions'] and
-        (
-            real_name not in config['blacklist'] and
-            quality == config['subscriptions'][real_name] and
+        exists_config
+        and not exists_blacklist
+        and (
             not series.endswith('E99') and
             not series.endswith('E999')
-        ) and not
+        )
 
         # И если их нет в списке текущих раздач в transmission
-        (
-            real_name in catalog and
-            series in catalog[real_name]
-        )
+        and not exists_downloading
+
         # И если нет в истории закачек
-            and not db_exists
+        and not exists_db
+
     ):
         logging.info(f"Добавляем {title}")
         logging.debug(
@@ -223,4 +228,5 @@ for item in rss_items:
         })
     else:
         logging.debug(
-            f'Пропуск real_name={real_name}, series={series}, quality={quality}')
+#            f'Пропуск [blacklisted: {exists_blacklist}, downloaded: {exists_db}, downloading: {exists_downloading}] config={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
+            f'Пропуск [already_downloaded={exists_db}, now_downloading={exists_downloading}] want_to_download={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
