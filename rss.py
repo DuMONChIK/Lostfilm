@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import requests
 from pathlib import Path
 import re
@@ -9,6 +11,8 @@ from yaml import load as yaml_load
 from yaml import SafeLoader as yaml_loader
 from xml.etree import ElementTree
 import yaml
+import datetime as dt
+import sqlite3
 
 # var_dump analogue
 def var_dump(var):
@@ -88,7 +92,6 @@ request_download_root = transmission_rpc_request(
 download_root = Path(request_download_root['arguments']['download-dir'])
 logging.debug("Директория: {}".format(download_root))
 
-
 # Формируем каталог уже загруженных файлов
 request_available_torrents = transmission_rpc_request(
     {
@@ -123,6 +126,21 @@ for job in request_available_torrents['arguments']['torrents']:
         catalog[name].add(series)
 logging.debug("Каталог: {}".format(catalog))
 
+# Подключаемся к базе с историей загрузок
+con = sqlite3.connect("download-history.db")
+cur = con.cursor()
+cur.execute("""
+        CREATE TABLE IF NOT EXISTS history(
+          download_date TEXT,
+          real_name TEXT,
+          series TEXT,
+          quality TEXT,
+          title TEXT,
+          link TEXT,
+          PRIMARY KEY (real_name, series, quality)
+        )
+    """)
+
 # Запрос RSS ленты
 list_request = requests.get(
     config['url'],
@@ -151,6 +169,18 @@ for item in rss_items:
         logging.warning(f"Не получилось найти имя: {title}")
         continue
 
+    db_exists = False
+    # Проверяем наличие в базе истории закачек
+    for db_row in cur.execute(f"""
+        SELECT 1 FROM history WHERE 1=1
+            AND real_name = '{real_name}'
+            AND series = '{series}'
+            AND quality = '{quality}'
+    """):
+        #var_dump(db_row[0])
+        if (db_row[0] == 1):
+            db_exists = True
+
     # Качаем только нужные серии
     if (
         real_name in config['subscriptions'] and
@@ -166,10 +196,19 @@ for item in rss_items:
             real_name in catalog and
             series in catalog[real_name]
         )
+        # И если нет в истории закачек
+            and not db_exists
     ):
         logging.info(f"Добавляем {title}")
         logging.debug(
             f'real_name={real_name}, series={series}, quality={quality}')
+
+        db_data = [
+            ( title, quality, series, real_name, link )
+        ]
+        cur.executemany("INSERT INTO history (download_date,title, quality, series, real_name, link)"
+                        " VALUES (datetime('now'),?,?,?,?,?)", db_data)
+        con.commit()  # Remember to commit the transaction after executing INSERT.
 
         download_location=''.join(real_name.strip('.').split(':'))
 
