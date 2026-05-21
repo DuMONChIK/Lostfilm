@@ -65,8 +65,7 @@ def transmission_rpc_request(rpc_data: dict) -> dict:
         torrent_session_search = re.search('X-Transmission-Session-Id: .+?(?=<)',
                                            torrent_request.text)
         if torrent_session_search:
-            transmission_session_id = torrent_session_search.group(0).split(':')[
-                1].strip()
+            transmission_session_id = torrent_session_search.group(0).split(':')[1].strip()
     if torrent_request.status_code != 200:
         logging.error('transmission RPC: {}'.format(torrent_request))
         exit(torrent_request.status_code)
@@ -186,4 +185,3 @@ for item in rss_items:
     else:
         logging.debug(
             f'Пропуск real_name={real_name}, series={series}, quality={quality}')
-

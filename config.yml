@@ -1,13 +1,157 @@
-url: http://retre.org/rssdd.xml
+url: http://127.0.0.1:9901/rssdd.xml
+verbose: "debug"
+timeout: 6
+log:
+  maxBytes: 10000000
+  backupCount: 5
 auth:
-  uid:
-  usess:
+  uid: 4350393
+  usess: d44a1fd26b81139960ff84f34dc1f5e3
 subscriptions:
-  Iron Fist: 1080p
+  "Lucifer": MP4
+  "Raised by Wolves": MP4
+  "Нижние палубы": MP4
+  "Звездный путь: Нижние палубы": MP4
+  "The 100": MP4
+  "The Outpost": MP4
+  "The Walking Dead": MP4
+  "Star Trek: Discovery": MP4
+  "The Mandalorian": MP4
+  "The Expanse": MP4
+  "Chilling Adventures of Sabrina": MP4
+  "American Gods": MP4
+  "Pandora": MP4
+  "Snowpiercer": MP4
+  "Truth Seekers": MP4
+  "Creepshow": MP4
+  "His Dark Materials": MP4
+  "Pennyworth": MP4
+  "The Stand": MP4
+  "Transformers: War for Cybertron": MP4
+  "American Gods": MP4
+  "Legacies": MP4
+  "Birds of a Feather": MP4
+#  "Tribes of Europa": MP4  # stal ne interesen
+#  "Young Rock": MP4 # fial about film / fignya
+#  "Genius": MP4 # stal ne interesen
+  "The Flash": MP4
+  "Debris": MP4
+  "Resident Alien": MP4
+  "The Irregulars": MP4
+  "DOTA: Dragon's Blood": MP4
+  "Manifest": MP4
+  "The Nevers": MP4
+  "Van Helsing": MP4
+  "Shadow and Bone": MP4
+  "Intergalactic": MP4
+  "Legends of Tomorrow": MP4
+  "Star Wars: The Bad Batch": MP4
+  "Loki": MP4
+  "Jupiter's Legacy": MP4
+  "Sweet Tooth": MP4
+  "Evil": MP4
+  "RESIDENT EVIL: Infinite Darkness": MP4
+  "Monsters at Work": MP4
+#  "Marvel Studios: Assembled": MP4 # film about film / fignya
+  "S.O.Z. Soldados o Zombies": MP4
+#  "Heels": MP4 # fignya
+  "Star Trek: Lower Decks": MP4
+  "The Witcher": MP4
+#  "What If...?": MP4 # stal ne interesen
+  "Titans": MP4
+  "See": MP4
+  "Fantasy Island": MP4
+  "Squid Game": MP4
+  "Stargirl": MP4
+  "Foundation": MP4
+  "Another Life": MP4
+  "Locke Key": MP4
+  "Invasion": MP4
+  "Doom Patrol": MP4
+  "The Wheel of Time": MP4
+  "Hawkeye": MP4
+  "Hanna": MP4
+  "Lost in Space": MP4
+  "1883": MP4
+  "The Book of Boba Fett": MP4
+  "Space Force": MP4
+  "Charmed": MP4
+  "Star Trek: Picard": MP4
+  "Moon Knight": MP4
+  "Halo": MP4
+  "Star Trek: Strange New Worlds": MP4
+  "Obi-Wan Kenobi": MP4
+  "The Man Who Fell to Earth": MP4
+  "The Orville": MP4
+  "Stranger Things": MP4
+  "The Umbrella Academy": MP4
+  "Resident Evil": MP4
+  "She-Hulk: Attorney at Law": MP4
+  "The Lord of the Rings: The Rings of Power": MP4
+  "House of the Dragon": MP4
+  "Cyberpunk: Edgerunners": MP4
+  "Cars on the Road": MP4
+  "The Winchesters": MP4
+  "The Peripheral": MP4
+  "Severance": MP4
+  "Star Wars: Tales of the Jedi": MP4
+  "Warrior Nun": MP4
+  "Wednesday": MP4
+  "The Continental": MP4
+  "Blue Beetle": 1080p
+  "Monarch: Legacy of Monsters": MP4
+  "Beacon 23": MP4
+  "Rebel Moon: A Child of Fire": 1080p
+  "The Artful Dodger": MP4
+  "Reacher": MP4
+  "Star Wars: Young Jedi Adventures": MP4
+  "Shōgun": MP4
+  "Avatar: The Last Airbender": MP4
+  "Madame Web": 1080p
+  "Fallout": MP4
+  "Gen V": MP4
+  "Sugar": MP4
+  "Dark Matter": MP4
+  "Outer Range": MP4
+  "The Acolyte": MP4
+  "The Lord of the Rings: The Rings of Power": MP4
+  "Vienna Blood": MP4
+  "Terminator Zero": MP4
+  "Inside Out": MP4
+  "Головоломка": 1080p
+  "Watchmen: Chapter 1": 1080p
+  "Watchmen: Chapter 2": 1080p
+  "Хранители": 1080p
+  "Citadel: Diana": 1080p
+  "Sweetpea": MP4
+  "Dune: Prophecy": MP4
+  "Silo": MP4
+  "Star Wars: Skeleton Crew": MP4
+  "Secret Level": MP4
+  "The Head": MP4
+  "Nautilus": MP4
+  "Zero Day": MP4
+  "Daredevil: Born Again": MP4
+  "The Last of Us": MP4
+  "Murderbot": MP4
+  "Andor": MP4
+  "The Librarians: The Next Chapter": MP4
+  "Fubar": MP4
+  "Revival": MP4
+  "Twisted Metal": MP4
+  "Alien: Earth": MP4
+  "The Rats: A Witcher Tale": MP4
+  "Sandokan": 1080p
+  "Star Trek: Starfleet Academy": MP4
+  "The Night Manager": MP4
+  "Something Very Bad Is Going To Happen": MP4
+  "Star Wars: Maul - Shadow Lord": MP4
+blacklist:
+  qweqweqwe: yes
 aliases:
-  Marvels Iron Fist: Iron Fist
+  qweqweqwe: qweqweqwe-alias
 transmission:
-  host: localhost
+  host: 127.0.0.1
   port: 9091
-  user:
-  password:
+  user: "transmission"
+  password: "{c621459ad52ef9d721ffedf359c69a6a4cb45bb9ObCXu7v4"
