@@ -1,0 +1,22 @@
+url: http://127.0.0.1:9901/rssdd.xml
+verbose: "debug"
+timeout: 6
+log:
+  maxBytes: 10000000
+  backupCount: 5
+auth:
+  uid: xxx
+  usess: xxxxxxx
+subscriptions:
+  "Lucifer": MP4
+  "Raised by Wolves": MP4
+  "Звездный путь: Нижние палубы": MP4
+blacklist:
+  qweqweqwe: yes
+aliases:
+  qweqweqwe: qweqweqwe-alias
+transmission:
+  host: 127.0.0.1
+  port: 9091
+  user: "transmission"
+  password: "xxx"
