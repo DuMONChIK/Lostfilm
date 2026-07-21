@@ -127,7 +127,7 @@ for job in request_available_torrents['arguments']['torrents']:
 logging.debug("Каталог: {}".format(catalog))
 
 # Подключаемся к базе с историей загрузок
-con = sqlite3.connect("download-history.db")
+con = sqlite3.connect("/home/dima/Lostfilm/download-history.db")
 cur = con.cursor()
 cur.execute("""
         CREATE TABLE IF NOT EXISTS history(
@@ -169,17 +169,16 @@ for item in rss_items:
         logging.warning(f"Не получилось найти имя: {title}")
         continue
 
-    exists_db = False
     # Проверяем наличие в базе истории закачек
-    for db_row in cur.execute(f"""
-        SELECT 1 FROM history WHERE 1=1
-            AND real_name = '{real_name}'
-            AND series = '{series}'
-            AND quality = '{quality}'
-    """):
-        #var_dump(db_row[0])
-        if ( db_row[0] == 1 ):
-            exists_db = True
+    db_row = cur.execute("""
+        SELECT 1
+        FROM history
+        WHERE real_name = ?
+          AND series = ?
+          AND quality = ?
+        LIMIT 1
+    """, (real_name, series, quality)).fetchone()
+    exists_db = db_row is not None
 
     exists_config = real_name in config['subscriptions'] and quality == config['subscriptions'][real_name]
     exists_blacklist = real_name in config['blacklist']
