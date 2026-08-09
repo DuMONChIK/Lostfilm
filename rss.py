@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import json
 import logging
+import sys
 from logging.handlers import RotatingFileHandler
 from yaml import load as yaml_load
 from yaml import SafeLoader as yaml_loader
@@ -14,13 +15,51 @@ import yaml
 import datetime as dt
 import sqlite3
 
+
+class UniqueKeyLoader(yaml_loader):
+    """Безопасный YAML-загрузчик, запрещающий повторяющиеся ключи."""
+
+    def construct_mapping(self, node, deep=False):
+        seen_keys = {}
+        for key_node, _ in node.value:
+            # Ключ слияния YAML (<<) обрабатывает родительский SafeLoader.
+            if key_node.tag == 'tag:yaml.org,2002:merge':
+                continue
+
+            key = self.construct_object(key_node, deep=deep)
+            try:
+                if key in seen_keys:
+                    raise yaml.constructor.ConstructorError(
+                        'Первое объявление ключа',
+                        seen_keys[key],
+                        f'Обнаружен повторяющийся ключ {key!r}',
+                        key_node.start_mark
+                    )
+                seen_keys[key] = key_node.start_mark
+            except TypeError as error:
+                raise yaml.constructor.ConstructorError(
+                    'При разборе YAML-словаря',
+                    node.start_mark,
+                    'Обнаружен нехешируемый ключ',
+                    key_node.start_mark
+                ) from error
+
+        return super().construct_mapping(node, deep=deep)
+
+
 # var_dump analogue
 def var_dump(var):
     print(f"{var=}, type={type(var)}")
 
+
 # Парсинг настроек
-with open(Path(__file__).resolve().parent / 'config.yml', 'r') as yaml_config:
-    config = yaml_load(yaml_config, Loader=yaml_loader)
+config_path = Path(__file__).resolve().parent / 'config.yml'
+try:
+    with open(config_path, 'r', encoding='utf-8') as yaml_config:
+        config = yaml_load(yaml_config, Loader=UniqueKeyLoader)
+except yaml.YAMLError as error:
+    print(f'Ошибка в {config_path.name}:\n{error}', file=sys.stderr)
+    raise SystemExit(2) from None
 
 # настройка логирования
 logging.basicConfig(
@@ -271,5 +310,6 @@ for item in rss_items:
             'method': 'torrent-add'
         })
     else:
-        #logging.debug(f'Пропуск [blacklisted: {exists_blacklist}, downloaded: {exists_db}, downloading: {exists_downloading}] config={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
-        logging.debug(f'Пропуск [already_downloaded={exists_db}, now_downloading={exists_downloading}] want_to_download={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
+        logging.debug(
+#            f'Пропуск [blacklisted: {exists_blacklist}, downloaded: {exists_db}, downloading: {exists_downloading}] config={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
+            f'Пропуск [already_downloaded={exists_db}, now_downloading={exists_downloading}] want_to_download={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
