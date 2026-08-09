@@ -36,6 +36,51 @@ logging.basicConfig(
 )
 
 
+def compile_regex_subscriptions(regex_config):
+    """Компилирует подписки из subscriptions-regex и проверяет их синтаксис."""
+    if regex_config is None:
+        return []
+    if not isinstance(regex_config, dict):
+        logging.error('Параметр subscriptions-regex должен быть словарём')
+        raise SystemExit(2)
+
+    compiled_subscriptions = []
+    for pattern, quality in regex_config.items():
+        try:
+            compiled_subscriptions.append((re.compile(pattern), quality))
+        except (TypeError, re.error) as error:
+            logging.error(
+                'Некорректное регулярное выражение в subscriptions-regex %r: %s',
+                pattern,
+                error
+            )
+            raise SystemExit(2) from error
+    return compiled_subscriptions
+
+
+subscriptions = config.get('subscriptions') or {}
+regex_subscriptions = compile_regex_subscriptions(
+    config.get('subscriptions-regex')
+)
+
+
+def is_subscribed(real_name, quality):
+    """Проверяет точные подписки и подписки по регулярным выражениям."""
+    if subscriptions.get(real_name) == quality:
+        return True
+
+    for pattern, subscription_quality in regex_subscriptions:
+        if subscription_quality == quality and pattern.search(real_name):
+            logging.debug(
+                'Подписка по regex: pattern=%r, real_name=%r, quality=%r',
+                pattern.pattern,
+                real_name,
+                quality
+            )
+            return True
+    return False
+
+
 # Cookie для авторизации на трекере
 cookies = ';'.join(['{}={}'.format(cookie, config['auth'][cookie])
                    for cookie in config['auth']])
@@ -180,7 +225,7 @@ for item in rss_items:
     """, (real_name, series, quality)).fetchone()
     exists_db = db_row is not None
 
-    exists_config = real_name in config['subscriptions'] and quality == config['subscriptions'][real_name]
+    exists_config = is_subscribed(real_name, quality)
     exists_blacklist = real_name in config['blacklist']
     exists_downloading = real_name in catalog and series in catalog[real_name]
 
@@ -226,6 +271,5 @@ for item in rss_items:
             'method': 'torrent-add'
         })
     else:
-        logging.debug(
-#            f'Пропуск [blacklisted: {exists_blacklist}, downloaded: {exists_db}, downloading: {exists_downloading}] config={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
-            f'Пропуск [already_downloaded={exists_db}, now_downloading={exists_downloading}] want_to_download={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
+        #logging.debug(f'Пропуск [blacklisted: {exists_blacklist}, downloaded: {exists_db}, downloading: {exists_downloading}] config={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
+        logging.debug(f'Пропуск [already_downloaded={exists_db}, now_downloading={exists_downloading}] want_to_download={exists_config}, real_name={real_name}, series={series}, quality={quality}, ')
